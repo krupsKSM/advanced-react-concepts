@@ -15,7 +15,7 @@ export const ThemeContext = createContext<ThemeContextType | undefined>(
 const THEME_STORAGE_KEY = "theme"
 // Read initial theme from localStorage (or fallback)
 const getInitialTheme = (): Theme =>{
-  const storedTheme = localStorage.getItem("THEME_STORAGE_KEY")
+  const storedTheme = localStorage.getItem(THEME_STORAGE_KEY)
 
   return (storedTheme === 'light' || storedTheme === 'dark')
           ? storedTheme : "light"
@@ -31,7 +31,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
 
   // Sync theme changes to local storage
   useEffect(()=>{
-    localStorage.setItem("THEME_STORAGE_KEY", theme)
+    localStorage.setItem(THEME_STORAGE_KEY, theme)
   },[theme])
 
   return (
