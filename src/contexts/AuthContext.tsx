@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useState } from "react";
+import { createContext, PropsWithChildren, useEffect, useState } from "react";
 
 interface User {
     name: string;
@@ -16,8 +16,26 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [user, setUser] = useState<User | null>(null);
 
-    const login = (user: User) => setUser(user);
-    const logout = () => setUser(null);
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                setUser(JSON.parse(storedUser))
+            } catch (error) {
+                console.error("Failed to parse stored User: ", error);
+                localStorage.removeItem('user')
+            }
+        }
+    }, [])
+
+    const login = (user: User) => {
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user))
+    }
+    const logout = () => {
+        setUser(null);
+        localStorage.removeItem('user');
+    }
 
     return (
         <AuthContext.Provider value={{ user, login, logout }}>
