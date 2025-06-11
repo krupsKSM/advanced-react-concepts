@@ -2,7 +2,7 @@ import "./styles.css";
 import useCounter from "./customHooks/useCounter";
 import useToggle from "./customHooks/useToggle";
 import { ThemeContext } from "./contexts/ThemeContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useTheme } from "./customHooks/useTheme";
 import { useAuth } from "./customHooks/useAuth";
 
@@ -10,8 +10,22 @@ const App: React.FC = () => {
   const { count, increment, decrement, reset } = useCounter(0);
   const { value, toggle } = useToggle();
   const { theme, toggleTheme } = useTheme();
-  const { user, login, logout } = useAuth();
+  const { user, login, logout,loading, error } = useAuth();
 
+  // states for login form input
+  const [email,setEmail] = useState("");
+  const [password,setPassword] = useState("")
+
+  const handleLogin = async () =>{
+    if(!email || !password)
+      alert("Please enter email or password");
+    try{
+      await login(email,password);
+    }catch(error){
+      console.error(error);
+      
+    }
+  }
   return (
     <>
       <div
@@ -46,8 +60,21 @@ const App: React.FC = () => {
             </>
           ) : (
             <>
-              <p>Click to Login</p>
-              <button onClick={() => login({ name: 'Yo Ani', email: "yo@ex.com" })}>Login</button>
+              <input
+              type="email"
+              placeholder="Enter e-mail"
+              value= {email}
+              onChange={(e)=>setEmail(e.target.value)}/>
+              <br />
+
+              <input type="password" placeholder="Enter password" value={password}
+                onChange={(e)=>setPassword(e.target.value)}
+               /> <br />
+
+              <button onClick={handleLogin} disabled={loading}>
+                {loading ? "Logging in..." : "Login"}</button>
+
+              {error && <p style={{color:"red"}}>{error}</p>}
             </>
           )}
 
